@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GeminiHandle — A Swift Vapor API powered by Gemini AI">
+    <title>GeminiHandle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0c;
+            --bg-secondary: #111115;
+            --bg-card: rgba(18, 18, 24, 0.7);
+            --crimson: #c62828;
+            --crimson-soft: #e53935;
+            --crimson-glow: rgba(198, 40, 40, 0.25);
+            --gold: #d4a053;
+            --gold-dim: rgba(212, 160, 83, 0.15);
+            --text-primary: #e8e6e3;
+            --text-secondary: #8a8a8e;
+            --text-muted: #555560;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(198, 40, 40, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ── Ambient Background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse 600px 400px at 20% 30%, var(--crimson-glow), transparent),
+                radial-gradient(ellipse 500px 350px at 80% 70%, rgba(212, 160, 83, 0.08), transparent);
+            animation: ambientDrift 20s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes ambientDrift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, -1%) rotate(1deg); }
+            66% { transform: translate(-1%, 2%) rotate(-1deg); }
+        }
+
+        /* ── Noise Overlay ── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ── Main Container ── */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── Hero Section ── */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            padding: 48px 0;
+        }
+
+        /* ── GIF Container ── */
+        .avatar-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            box-shadow:
+                0 0 40px var(--crimson-glow),
+                0 0 80px rgba(198, 40, 40, 0.1),
+                inset 0 0 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .avatar-wrapper:hover {
+            border-color: var(--border-hover);
+            box-shadow:
+                0 0 60px var(--crimson-glow),
+                0 0 120px rgba(198, 40, 40, 0.15),
+                inset 0 0 30px rgba(0, 0, 0, 0.3);
+            transform: scale(1.03);
+        }
+
+        .avatar-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%,
+                var(--crimson) 10%,
+                transparent 20%,
+                transparent 100%
+            );
+            animation: ringRotate 8s linear infinite;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        @keyframes ringRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.9) contrast(1.05);
+            transition: filter 0.5s ease;
+        }
+
+        .avatar-wrapper:hover img {
+            filter: saturate(1.1) contrast(1.1);
+        }
+
+        /* ── Identity Text ── */
+        .identity {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .identity h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary), var(--crimson-soft));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .identity .tagline {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .identity .sub {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+            margin: 8px 0;
+            opacity: 0.5;
+        }
+
+        /* ── Status Card ── */
+        .status-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: border-color 0.3s ease;
+        }
+
+        .status-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .status-header span {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+        }
+
+        .endpoints {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .endpoint {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .endpoint:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border);
+        }
+
+        .method {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.04em;
+            flex-shrink: 0;
+        }
+
+        .method.get {
+            background: rgba(76, 175, 80, 0.12);
+            color: #66bb6a;
+        }
+
+        .method.post {
+            background: rgba(198, 40, 40, 0.12);
+            color: var(--crimson-soft);
+        }
+
+        .path {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8125rem;
+            color: var(--text-primary);
+        }
+
+        .path-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 32px;
+            padding-bottom: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer .tech {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        .footer .tech .dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .footer .quote {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+            opacity: 0.6;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── Clock Icon (Kurumi's identity) ── */
+        .clock-icon {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clock-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--crimson-soft);
+            fill: none;
+            stroke-width: 1.5;
+            opacity: 0.6;
+        }
+
+        /* ── Entrance Animations ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero > * {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        }
+
+        .hero > *:nth-child(1) { animation-delay: 0.1s; }
+        .hero > *:nth-child(2) { animation-delay: 0.25s; }
+        .hero > *:nth-child(3) { animation-delay: 0.4s; }
+        .hero > *:nth-child(4) { animation-delay: 0.55s; }
+        .hero > *:nth-child(5) { animation-delay: 0.7s; }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .avatar-wrapper {
+                width: 160px;
+                height: 160px;
+            }
+
+            .identity h1 {
+                font-size: 1.5rem;
+            }
+
+            .status-card {
+                padding: 16px 18px;
+            }
+
+            .path-desc {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main class="hero">
+            <div class="avatar-wrapper">
+                <img src="/index.gif" alt="Tokisaki Kurumi" loading="eager">
+            </div>
+
+            <div class="identity">
+                <h1>Mockr Bridge API</h1>
+                <p class="tagline">Swift &middot; Vapor &middot; Gemini AI</p>
+                <p class="sub">A simple API service built with Vapor, interfacing with Gemini for Mockr App.</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-dot"></div>
+                    <span>API Endpoints</span>
+                </div>
+                <div class="endpoints">
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="path">/</span>
+                        <span class="path-desc">this page</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/chat</span>
+                        <span class="path-desc">send message</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/chat/stream</span>
+                        <span class="path-desc">stream response</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="tech">
+                    <span>vapor</span>
+                    <span class="dot"></span>
+                    <span>swift 6</span>
+                    <span class="dot"></span>
+                    <span>gemini api</span>
+                </div>
+                <p class="quote">UcakUcak Team</p>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>

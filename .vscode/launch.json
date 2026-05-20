@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gemini-handle}",
+            "name": "Debug GeminiHandle",
+            "target": "GeminiHandle",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug GeminiHandle"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gemini-handle}",
+            "name": "Release GeminiHandle",
+            "target": "GeminiHandle",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release GeminiHandle"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gemini-handle}",
+            "name": "Debug GeminiHandleApp",
+            "target": "GeminiHandleApp",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug GeminiHandleApp"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:gemini-handle}",
+            "name": "Release GeminiHandleApp",
+            "target": "GeminiHandleApp",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release GeminiHandleApp"
+        }
+    ]
+}
