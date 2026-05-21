@@ -3,7 +3,7 @@ import GeminiHandle
 
 struct ChatController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
-        let chat = routes.grouped("api", "chat")
+        let chat = routes.grouped("chat")
         chat.post(use: sendMessage)
         chat.post("stream", use: streamMessage)
     }

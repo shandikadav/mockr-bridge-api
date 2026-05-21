@@ -293,7 +293,7 @@
 
         .path {
             font-family: 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
             color: var(--text-primary);
         }
 
@@ -301,6 +301,34 @@
             font-size: 0.75rem;
             color: var(--text-muted);
             margin-left: auto;
+        }
+
+        .version-badge {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.625rem;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(198, 40, 40, 0.15);
+            color: var(--crimson-soft);
+            letter-spacing: 0.04em;
+            margin-left: auto;
+        }
+
+        .endpoint-group-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.625rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 4px 12px 0;
+        }
+
+        .endpoint-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 12px;
         }
 
         /* ── Footer ── */
@@ -419,21 +447,36 @@
                 <div class="status-header">
                     <div class="status-dot"></div>
                     <span>API Endpoints</span>
+                    <span class="version-badge">v1</span>
                 </div>
                 <div class="endpoints">
-                    <div class="endpoint">
-                        <span class="method get">GET</span>
-                        <span class="path">/</span>
-                        <span class="path-desc">this page</span>
-                    </div>
+                    <div class="endpoint-group-label">Context & Insights</div>
                     <div class="endpoint">
                         <span class="method post">POST</span>
-                        <span class="path">/chat</span>
+                        <span class="path">/api/v1/get-context</span>
+                        <span class="path-desc">submit data</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/v1/feedback</span>
+                        <span class="path-desc">ai feedback</span>
+                    </div>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/v1/recap</span>
+                        <span class="path-desc">daily / weekly</span>
+                    </div>
+
+                    <div class="endpoint-divider"></div>
+                    <div class="endpoint-group-label">Chat</div>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/v1/chat</span>
                         <span class="path-desc">send message</span>
                     </div>
                     <div class="endpoint">
                         <span class="method post">POST</span>
-                        <span class="path">/chat/stream</span>
+                        <span class="path">/api/v1/chat/stream</span>
                         <span class="path-desc">stream response</span>
                     </div>
                 </div>
@@ -447,7 +490,7 @@
                     <span class="dot"></span>
                     <span>gemini api</span>
                 </div>
-                <p class="quote">UcakUcak Team</p>
+                <p class="quote">UcakAcuk Team</p>
             </footer>
         </main>
     </div>
